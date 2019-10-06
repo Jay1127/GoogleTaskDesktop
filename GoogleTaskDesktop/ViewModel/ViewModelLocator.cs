@@ -11,7 +11,7 @@ namespace GoogleTaskDesktop.ViewModel
         {
             ServiceLocator.SetLocatorProvider(() => SimpleIoc.Default);
 
-            SimpleIoc.Default.Register<IDialogCoordinator>(() => DialogCoordinator.Instance);
+            SimpleIoc.Default.Register(() => DialogCoordinator.Instance);
             SimpleIoc.Default.Register<MainViewModel>();
         }
 
