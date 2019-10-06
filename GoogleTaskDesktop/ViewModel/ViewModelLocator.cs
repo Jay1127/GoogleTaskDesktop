@@ -1,6 +1,7 @@
 using CommonServiceLocator;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Ioc;
+using MahApps.Metro.Controls.Dialogs;
 
 namespace GoogleTaskDesktop.ViewModel
 {
@@ -10,6 +11,7 @@ namespace GoogleTaskDesktop.ViewModel
         {
             ServiceLocator.SetLocatorProvider(() => SimpleIoc.Default);
 
+            SimpleIoc.Default.Register<IDialogCoordinator>(() => DialogCoordinator.Instance);
             SimpleIoc.Default.Register<MainViewModel>();
         }
 

@@ -4,12 +4,25 @@
                       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                       xmlns:Controls="http://metro.mahapps.com/winfx/xaml/controls"
+                      xmlns:Dialog="clr-namespace:MahApps.Metro.Controls.Dialogs;assembly=MahApps.Metro"
                       xmlns:local="clr-namespace:GoogleTaskDesktop"
+                      xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
                       mc:Ignorable="d"                      
                       GlowBrush="{DynamicResource AccentColorBrush}"
+                      Dialog:DialogParticipation.Register="{Binding}"
                       TitleCaps="False"
-                      Title="GoogleTaskDesktop" Height="450" Width="800">
+                      Title="GoogleTaskDesktop" Height="600" Width="978"
+                      WindowStartupLocation="CenterScreen"
+                      DataContext="{Binding Main, Source={StaticResource Locator}}">
+    <i:Interaction.Triggers>
+        <i:EventTrigger EventName="Loaded">
+            <i:InvokeCommandAction Command="{Binding LoadCommand}"/>
+        </i:EventTrigger>
+    </i:Interaction.Triggers>
     <Grid>
-
+        <Grid.RowDefinitions>
+            <RowDefinition Height="40"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
     </Grid>
 </Controls:MetroWindow>
