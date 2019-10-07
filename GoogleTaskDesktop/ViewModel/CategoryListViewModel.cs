@@ -8,6 +8,7 @@ namespace GoogleTaskDesktop.ViewModel
     public class CategoryListViewModel : ViewModelBase
     {
         private bool _isOpen;
+        private CategoryViewModel _currentCategory;
 
         /// <summary>
         /// 카테고리 리스트
@@ -18,6 +19,20 @@ namespace GoogleTaskDesktop.ViewModel
         /// 카테고리 리스트(뷰 모델) 
         /// </summary>
         public ObservableCollection<CategoryViewModel> CategoryViewModels { get; }
+
+        /// <summary>
+        /// 선택된 카테고리
+        /// </summary>
+        public CategoryViewModel CurrentCategory
+        {
+            get => _currentCategory;
+            set
+            {
+                Set(ref _currentCategory, value);
+
+                IsOpen = false;
+            }
+        }
 
         /// <summary>
         /// 현재 카테고리 리스트가 뷰에 보여지는지 여부
