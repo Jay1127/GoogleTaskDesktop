@@ -6,6 +6,7 @@
                       xmlns:Controls="http://metro.mahapps.com/winfx/xaml/controls"
                       xmlns:Dialog="clr-namespace:MahApps.Metro.Controls.Dialogs;assembly=MahApps.Metro"
                       xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
+                      xmlns:simpleChildWindow="clr-namespace:MahApps.Metro.SimpleChildWindow;assembly=MahApps.Metro.SimpleChildWindow"
                       xmlns:local="clr-namespace:GoogleTaskDesktop"
                       xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
                       mc:Ignorable="d"                      
@@ -20,18 +21,45 @@
             <i:InvokeCommandAction Command="{Binding LoadCommand}"/>
         </i:EventTrigger>
     </i:Interaction.Triggers>
+    
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="40"/>
             <RowDefinition/>
         </Grid.RowDefinitions>
 
-        <Button Width="35"
-                Height="35"
-                HorizontalAlignment="Left"
-                BorderThickness="0"
-                Background="Transparent">
-            <iconPacks:PackIconFontAwesome Kind="BarsSolid"/>
-        </Button>
+        <Grid Grid.Row="0">
+            <Button Width="35"
+                    Height="35"
+                    HorizontalAlignment="Left"
+                    BorderThickness="0"
+                    Margin="5,0,0,0"
+                    Style="{StaticResource SquareButtonStyle}"
+                    Command="{Binding ShowCategoriesCommand}">
+                <iconPacks:PackIconFontAwesome Kind="BarsSolid"/>
+            </Button>
+
+            <!--<TextBlock Text="{Binding}"
+                       HorizontalAlignment="Left"
+                       VerticalAlignment="Center"
+                       Margin="45,0,0,0"/>-->
+        </Grid>
+
+        <!--#region CategoryListPopup-->
+        <simpleChildWindow:ChildWindow Grid.RowSpan="2"
+                                       Title="Categories"
+                                       DataContext="{Binding CategoryListViewModel}"
+                                       IsOpen="{Binding IsOpen}"
+                                       ShowCloseButton="True">
+            <Grid Width="300" 
+                  Height="415">
+                <ListBox ItemsSource="{Binding CategoryViewModels}" 
+                         DisplayMemberPath="Title"
+                         Margin="3">
+                    
+                </ListBox>
+            </Grid>
+        </simpleChildWindow:ChildWindow>
+        <!--#endregion-->
     </Grid>
 </Controls:MetroWindow>
