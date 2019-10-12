@@ -67,6 +67,8 @@ namespace GoogleTaskDesktop.ViewModel
             CategoryViewModels = new ObservableCollection<CategoryViewModel>(
                 Categories.GetCategories().Select(category => new CategoryViewModel(category)));
 
+            CurrentCategory = CategoryViewModels.FirstOrDefault();
+
             ShowNewCategoryCommand = new RelayCommand(ShowNewCategory);
         }
 

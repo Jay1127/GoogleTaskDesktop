@@ -85,6 +85,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Converters\EnumToBooleanConverter.cs" />
     <Compile Include="ViewModel\CategoryListViewModel.cs" />
     <Compile Include="ViewModel\CategoryPopupViewModel.cs" />
     <Compile Include="ViewModel\CategoryViewModel.cs" />

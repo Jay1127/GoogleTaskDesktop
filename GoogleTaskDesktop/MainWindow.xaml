@@ -9,6 +9,7 @@
                       xmlns:simpleChildWindow="clr-namespace:MahApps.Metro.SimpleChildWindow;assembly=MahApps.Metro.SimpleChildWindow"
                       xmlns:local="clr-namespace:GoogleTaskDesktop"
                       xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+                      xmlns:vm="clr-namespace:GoogleTaskDesktop.ViewModel"
                       mc:Ignorable="d"                      
                       GlowBrush="{DynamicResource AccentColorBrush}"
                       Dialog:DialogParticipation.Register="{Binding}"
@@ -16,6 +17,9 @@
                       Title="GoogleTaskDesktop" Height="600" Width="978"
                       WindowStartupLocation="CenterScreen"
                       DataContext="{Binding Main, Source={StaticResource Locator}}">
+    <Controls:MetroWindow.Resources>
+        <local:EnumToBooleanConverter x:Key="EnumToBooleanConverter"/>
+    </Controls:MetroWindow.Resources>
     <i:Interaction.Triggers>
         <i:EventTrigger EventName="Loaded">
             <i:InvokeCommandAction Command="{Binding LoadCommand}"/>
@@ -84,10 +88,16 @@
                         </Style.Triggers>
                     </Style>                    
                 </StackPanel.Resources>
-                
-                <RadioButton Content="All Task" />
-                <RadioButton Content="In Progress"/>
-                <RadioButton Content="Completed" />
+
+                <RadioButton IsChecked="{Binding FilterMode, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter={x:Static vm:TaskFilterMode.All}}"
+                             DataContext="{Binding CategoryListViewModel.CurrentCategory}"
+                             Content="All Task" />
+                <RadioButton IsChecked="{Binding FilterMode, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter={x:Static vm:TaskFilterMode.InProccess}}"
+                             DataContext="{Binding CategoryListViewModel.CurrentCategory}"
+                             Content="In Progress"/>
+                <RadioButton IsChecked="{Binding FilterMode, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter={x:Static vm:TaskFilterMode.Completed}}"
+                             DataContext="{Binding CategoryListViewModel.CurrentCategory}"
+                             Content="Completed" />
             </StackPanel>
 
             <Border BorderThickness="0,2,0,2" 
