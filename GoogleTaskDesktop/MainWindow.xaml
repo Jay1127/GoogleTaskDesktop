@@ -286,83 +286,10 @@
             </Grid>
         </simpleChildWindow:ChildWindow>
         <!--#endregion-->
-        
+
         <!--#region CategoryListPopup-->
-        <simpleChildWindow:ChildWindow Grid.RowSpan="2"
-                                       DataContext="{Binding CategoryListViewModel}"
-                                       IsOpen="{Binding IsCategoriesShown}"
-                                       IsModal="True"
-                                       ShowCloseButton="True">
-            <simpleChildWindow:ChildWindow.OverlayBrush>
-                <SolidColorBrush Opacity="0.3" Color="{StaticResource BlackColor}"/>
-            </simpleChildWindow:ChildWindow.OverlayBrush>
-            <simpleChildWindow:ChildWindow.Resources>
-                <ResourceDictionary>
-                    <ResourceDictionary.MergedDictionaries>
-                        <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/FlatButton.xaml" />
-                    </ResourceDictionary.MergedDictionaries>
-                </ResourceDictionary>
-            </simpleChildWindow:ChildWindow.Resources>
-            <simpleChildWindow:ChildWindow.TitleTemplate>
-                <DataTemplate>
-                    <DockPanel Height="30">
-                        <TextBlock Text="Categories" 
-                                   Margin="4"
-                                   TextTrimming="CharacterEllipsis"/>
-
-                        <Button BorderThickness="0"
-                                Width="28"
-                                Height="28"
-                                HorizontalAlignment="Right"
-                                Background="{DynamicResource AccentColorBrush}"
-                                Padding="0"
-                                VerticalAlignment="Center">
-                            <Button.Style>
-                                <Style TargetType="{x:Type ButtonBase}">
-                                    <Style.Triggers>
-                                        <Trigger Property="IsMouseOver" Value="True">
-                                            <Setter Property="Opacity" Value="0.7"/>
-                                        </Trigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </Button.Style>
-                            <iconPacks:PackIconFontAwesome Kind="PenSolid" 
-                                                           Foreground="White"/>
-                        </Button>
-                    </DockPanel>
-                </DataTemplate>
-            </simpleChildWindow:ChildWindow.TitleTemplate>
-            <Grid Width="300" 
-                  Height="415">
-                <ListBox ItemsSource="{Binding CategoryViewModels}" 
-                         SelectedItem="{Binding CurrentCategory}"
-                         DisplayMemberPath="Title"
-                         Margin="3">                    
-                </ListBox>
-
-                <Button Command="{Binding ShowNewCategoryCommand}"
-                        Margin="5"
-                        HorizontalAlignment="Right"
-                        VerticalAlignment="Bottom">
-                    <Button.Style>
-                        <Style TargetType="{x:Type ButtonBase}"
-                               BasedOn="{StaticResource MahApps.Metro.Styles.MetroCircleButtonStyle}">
-                            <Setter Property="Width" Value="40"/>
-                            <Setter Property="Height" Value="40"/>
-                            <Setter Property="BorderThickness" Value="0"/>
-                            <Setter Property="Background" Value="{DynamicResource AccentColorBrush}"/>
-                            <Style.Triggers>
-                                <Trigger Property="IsMouseOver" Value="True">
-                                    <Setter Property="Opacity" Value="0.7"/>
-                                </Trigger>
-                            </Style.Triggers>
-                        </Style>
-                    </Button.Style>
-                    
-                    <iconPacks:PackIconFontAwesome Kind="PlusSolid" Foreground="White"/>
-                </Button>
-            </Grid>
-        </simpleChildWindow:ChildWindow>
+        <local:CategoryListPopup DataContext="{Binding CategoryListViewModel}"
+                                 Grid.RowSpan="2"/>
         <!--#endregion-->
     </Grid>
 </Controls:MetroWindow>
