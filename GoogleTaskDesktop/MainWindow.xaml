@@ -219,7 +219,8 @@
                 </ListBox.ItemTemplate>-->
             </DataGrid>
 
-            <Button Command="{Binding ShowNewCategoryCommand}"
+            <Button Command="{Binding ShowNewTaskCommand}"
+                    DataContext="{Binding CategoryListViewModel.CurrentCategory}"
                     Grid.Row="2"
                     Margin="15"
                     HorizontalAlignment="Right"
@@ -243,11 +244,11 @@
             </Button>
         </Grid>
 
-        <!--#region CategoryCreationPopup-->
+        <!--#region Category or Task popup-->
         <simpleChildWindow:ChildWindow Grid.RowSpan="2"
-                                       Title="New Category"      
+                                       Title="{Binding Title}"      
                                        IsModal="False"
-                                       DataContext="{Binding CategoryListViewModel.CategoryPopupViewModel}"
+                                       DataContext="{Binding Source={StaticResource Locator}, Path=Popup}"
                                        IsOpen="{Binding IsShown}">
             <Grid Width="300" 
                   Height="90"
@@ -257,8 +258,8 @@
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
                 <StackPanel VerticalAlignment="Center">
-                    <TextBox Text="{Binding Title}"
-                             Controls:TextBoxHelper.Watermark="Enter new category name"
+                    <TextBox Text="{Binding Name}"
+                             Controls:TextBoxHelper.Watermark="{Binding Description}"
                              Controls:TextBoxHelper.ClearTextButton="True"
                              Controls:TextBoxHelper.UseFloatingWatermark="True"
                              BorderThickness="0,0,0,1"
@@ -273,13 +274,12 @@
                             HorizontalAlignment="Right"
                             Margin="0,0,80,0"/>
                     <Button Style="{StaticResource AccentedSquareButtonStyle}"
-                            Command="{Binding AddCategoryCommand}"
+                            Command="{Binding UpdateCommand}"
                             Controls:ControlsHelper.ContentCharacterCasing="Normal"
                             Width="70"
                             Content="OK"                             
                             HorizontalAlignment="Right"/>
                 </Grid>
-
             </Grid>
         </simpleChildWindow:ChildWindow>
         <!--#endregion-->

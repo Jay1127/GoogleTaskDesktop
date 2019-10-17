@@ -1,7 +1,11 @@
-﻿using GalaSoft.MvvmLight;
+﻿using CommonServiceLocator;
+using GalaSoft.MvvmLight;
+using GalaSoft.MvvmLight.Command;
 using GoogleTaskDesktop.Core;
+using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Linq;
 using System.Windows.Data;
 
 namespace GoogleTaskDesktop.ViewModel
@@ -46,11 +50,30 @@ namespace GoogleTaskDesktop.ViewModel
             }
         }
 
+        public RelayCommand ShowNewTaskCommand { get; }
+
         public CategoryViewModel(ICategory category)
         {
             Category = category;
 
             Tasks = new ObservableCollection<TaskItem>(Category.GetTasks());
+            ShowNewTaskCommand = new RelayCommand(ShowNewTaskPopup);
+        }
+
+        private void ShowNewTaskPopup()
+        {
+            var popup = ServiceLocator.Current.GetInstance<PopupViewModel>();
+            popup.Show("New Task", "Enter new task name");
+            popup.Updated += CategoryUpdatedAsync; ;
+        }
+
+        private async System.Threading.Tasks.Task CategoryUpdatedAsync(string updatedName)
+        {
+            await Category.AddTaskAsync(new TaskItem(updatedName));
+            Tasks.Add(Category.GetTasks().Last());
+
+            var popup = ServiceLocator.Current.GetInstance<PopupViewModel>();
+            popup.Updated -= CategoryUpdatedAsync;
         }
 
         private void ChangeViewMode()

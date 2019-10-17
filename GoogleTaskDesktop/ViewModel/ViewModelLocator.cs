@@ -12,6 +12,7 @@ namespace GoogleTaskDesktop.ViewModel
 
             SimpleIoc.Default.Register(() => DialogCoordinator.Instance);
             SimpleIoc.Default.Register<MainViewModel>();
+            SimpleIoc.Default.Register<PopupViewModel>();
         }
 
         public MainViewModel Main
@@ -19,6 +20,14 @@ namespace GoogleTaskDesktop.ViewModel
             get
             {
                 return ServiceLocator.Current.GetInstance<MainViewModel>();
+            }
+        }
+
+        public PopupViewModel Popup
+        {
+            get
+            {
+                return ServiceLocator.Current.GetInstance<PopupViewModel>();
             }
         }
         

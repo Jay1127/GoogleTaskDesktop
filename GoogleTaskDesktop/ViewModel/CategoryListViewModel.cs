@@ -1,4 +1,5 @@
-﻿using GalaSoft.MvvmLight;
+﻿using CommonServiceLocator;
+using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using GoogleTaskDesktop.Core;
 using System;
@@ -12,7 +13,7 @@ namespace GoogleTaskDesktop.ViewModel
     {
         private bool _isCategoriesShown;
         private CategoryViewModel _currentCategory;
-        private CategoryPopupViewModel _categoryPopupViewModel;
+        private PopupViewModel _categoryPopupViewModel;
 
         /// <summary>
         /// 카테고리 리스트
@@ -41,7 +42,7 @@ namespace GoogleTaskDesktop.ViewModel
         /// <summary>
         /// 카테고리 팝업
         /// </summary>
-        public CategoryPopupViewModel CategoryPopupViewModel
+        public PopupViewModel CategoryPopupViewModel
         {
             get => _categoryPopupViewModel;
             set => Set(ref _categoryPopupViewModel, value);
@@ -87,18 +88,23 @@ namespace GoogleTaskDesktop.ViewModel
         {
             IsCategoriesShown = false;
 
-            if (CategoryPopupViewModel != null)
-            {
-                CategoryPopupViewModel.CategoryUpdated -= CategoryPopupViewModel_CategoryUpdatedAsync;
-            }
+            var popup = ServiceLocator.Current.GetInstance<PopupViewModel>();
+            popup.Show("New Category", "Enter new category name");
+            popup.Updated += CategoryUpdatedAsync;
 
-            CategoryPopupViewModel = new CategoryPopupViewModel();
-            CategoryPopupViewModel.CategoryUpdated += CategoryPopupViewModel_CategoryUpdatedAsync;
-
-            CategoryPopupViewModel.ShowPopup();
+            //
+            //if (CategoryPopupViewModel != null)
+            //{
+            //    CategoryPopupViewModel.Updated -= CategoryPopupViewModel_CategoryUpdatedAsync;
+            //}
+            //
+            //CategoryPopupViewModel = new PopupViewModel();
+            //CategoryPopupViewModel.Updated += CategoryPopupViewModel_CategoryUpdatedAsync;
+            //
+            //CategoryPopupViewModel.Show("New Category", "Enter new category name");
         }
 
-        private async Task CategoryPopupViewModel_CategoryUpdatedAsync(string titleToUpdated)
+        private async Task CategoryUpdatedAsync(string titleToUpdated)
         {
             // 처음 생성하는 경우 ID를 부여안함.
             // ID는 서버에서 자동으로 부여함.(미리 부여하면 에러발생함.)
@@ -106,6 +112,9 @@ namespace GoogleTaskDesktop.ViewModel
             CategoryViewModels.Add(new CategoryViewModel(Categories.GetCategories().Last()));
 
             CurrentCategory = CategoryViewModels.Last();
+
+            var popup = ServiceLocator.Current.GetInstance<PopupViewModel>();
+            popup.Updated -= CategoryUpdatedAsync;
         }
     }
 }
