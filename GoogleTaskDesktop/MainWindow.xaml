@@ -247,9 +247,12 @@
         <!--#region Category or Task popup-->
         <simpleChildWindow:ChildWindow Grid.RowSpan="2"
                                        Title="{Binding Title}"      
-                                       IsModal="False"
+                                       IsModal="True"
                                        DataContext="{Binding Source={StaticResource Locator}, Path=Popup}"
                                        IsOpen="{Binding IsShown}">
+            <simpleChildWindow:ChildWindow.OverlayBrush>
+                <SolidColorBrush Opacity="0.3" Color="{StaticResource BlackColor}"/>
+            </simpleChildWindow:ChildWindow.OverlayBrush>
             <Grid Width="300" 
                   Height="90"
                   Margin="10">
@@ -288,8 +291,11 @@
         <simpleChildWindow:ChildWindow Grid.RowSpan="2"
                                        DataContext="{Binding CategoryListViewModel}"
                                        IsOpen="{Binding IsCategoriesShown}"
-                                       IsModal="False"
+                                       IsModal="True"
                                        ShowCloseButton="True">
+            <simpleChildWindow:ChildWindow.OverlayBrush>
+                <SolidColorBrush Opacity="0.3" Color="{StaticResource BlackColor}"/>
+            </simpleChildWindow:ChildWindow.OverlayBrush>
             <simpleChildWindow:ChildWindow.Resources>
                 <ResourceDictionary>
                     <ResourceDictionary.MergedDictionaries>
