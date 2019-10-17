@@ -46,6 +46,14 @@ namespace GoogleTaskDesktop.Core
         /// <summary>
         /// 할일 생성
         /// </summary>
+        public TaskItem(string title)
+        {
+            Title = title;
+        }
+
+        /// <summary>
+        /// 할일 생성
+        /// </summary>
         /// <param name="taskId"></param>
         /// <param name="title"></param>
         /// <param name="isCompleted"></param>

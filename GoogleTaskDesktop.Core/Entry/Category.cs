@@ -96,9 +96,11 @@ namespace GoogleTaskDesktop.Core
             var task = taskItem.ToTask();
 
             var service = new GoogleTaskService();
-            var newTasks = await service.InsertTaskAsync(task, Id);
+            var newTask = await service.InsertTaskAsync(task, Id);
 
-            _tasks.Add(taskItem);
+            var newTaskItem = new TaskItem(Id, newTask.Id, newTask.Title);
+
+            _tasks.Add(newTaskItem);
         }
         
         /// <summary>
