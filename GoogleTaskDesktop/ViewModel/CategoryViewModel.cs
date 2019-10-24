@@ -2,10 +2,12 @@
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using GoogleTaskDesktop.Core;
+using MahApps.Metro.Controls.Dialogs;
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows.Data;
 
 namespace GoogleTaskDesktop.ViewModel
@@ -52,17 +54,32 @@ namespace GoogleTaskDesktop.ViewModel
 
         public RelayCommand ShowNewTaskCommand { get; }
 
+        /// <summary>
+        /// 카테고리 이름 수정하기
+        /// </summary>
+        public RelayCommand RenameCategoryCommand { get; }
+
+        /// <summary>
+        /// 카테고리 삭제하기
+        /// </summary>
+        public RelayCommand RemoveCategoryCommand { get; }
+
+        public event EventHandler CategoryRenameRequested;
+        public event EventHandler CategoryRemoveRequested;
+
         public CategoryViewModel(ICategory category)
         {
             Category = category;
 
             Tasks = new ObservableCollection<TaskItem>(Category.GetTasks());
             ShowNewTaskCommand = new RelayCommand(ShowNewTaskPopup);
+            RenameCategoryCommand = new RelayCommand(() => CategoryRenameRequested ?.Invoke(this, EventArgs.Empty));
+            RemoveCategoryCommand = new RelayCommand(() => CategoryRemoveRequested?.Invoke(this, EventArgs.Empty));
         }
 
         private void ShowNewTaskPopup()
         {
-            var popup = ServiceLocator.Current.GetInstance<PopupViewModel>();
+            var popup = ServiceLocator.Current.GetInstance<EditorDialogViewModel>();
             popup.Show("New Task", "Enter new task name");
             popup.Updated += CategoryUpdatedAsync; ;
         }
@@ -72,7 +89,7 @@ namespace GoogleTaskDesktop.ViewModel
             await Category.AddTaskAsync(new TaskItem(updatedName));
             Tasks.Add(Category.GetTasks().Last());
 
-            var popup = ServiceLocator.Current.GetInstance<PopupViewModel>();
+            var popup = ServiceLocator.Current.GetInstance<EditorDialogViewModel>();
             popup.Updated -= CategoryUpdatedAsync;
         }
 

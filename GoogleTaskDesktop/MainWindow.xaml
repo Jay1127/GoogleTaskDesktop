@@ -245,7 +245,10 @@
         </Grid>
 
         <!--#region Category or Task popup-->
-        <simpleChildWindow:ChildWindow Grid.RowSpan="2"
+        <local:ItemEditorDialog DataContext="{Binding Source={StaticResource Locator}, Path=Popup}"
+                               Grid.RowSpan="2"/>
+        
+        <!--<simpleChildWindow:ChildWindow Grid.RowSpan="2"
                                        Title="{Binding Title}"      
                                        IsModal="True"
                                        DataContext="{Binding Source={StaticResource Locator}, Path=Popup}"
@@ -284,11 +287,11 @@
                             HorizontalAlignment="Right"/>
                 </Grid>
             </Grid>
-        </simpleChildWindow:ChildWindow>
+        </simpleChildWindow:ChildWindow>-->
         <!--#endregion-->
 
         <!--#region CategoryListPopup-->
-        <local:CategoryListPopup DataContext="{Binding CategoryListViewModel}"
+        <local:CategoryListDialog DataContext="{Binding CategoryListViewModel}"
                                  Grid.RowSpan="2"/>
         <!--#endregion-->
     </Grid>

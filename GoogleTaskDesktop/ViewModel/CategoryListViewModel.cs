@@ -2,6 +2,7 @@
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using GoogleTaskDesktop.Core;
+using MahApps.Metro.Controls.Dialogs;
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -13,7 +14,6 @@ namespace GoogleTaskDesktop.ViewModel
     {
         private bool _isCategoriesShown;
         private CategoryViewModel _currentCategory;
-        private PopupViewModel _categoryPopupViewModel;
 
         /// <summary>
         /// 카테고리 리스트
@@ -40,15 +40,6 @@ namespace GoogleTaskDesktop.ViewModel
         }
 
         /// <summary>
-        /// 카테고리 팝업
-        /// </summary>
-        public PopupViewModel CategoryPopupViewModel
-        {
-            get => _categoryPopupViewModel;
-            set => Set(ref _categoryPopupViewModel, value);
-        }
-
-        /// <summary>
         /// 현재 카테고리 리스트가 뷰에 보여지는지 여부
         /// </summary>
         public bool IsCategoriesShown
@@ -65,12 +56,19 @@ namespace GoogleTaskDesktop.ViewModel
         public CategoryListViewModel(ICategoryList categories)
         {
             Categories = categories;
+
             CategoryViewModels = new ObservableCollection<CategoryViewModel>(
-                Categories.GetCategories().Select(category => new CategoryViewModel(category)));
+                Categories.GetCategories().Select(category =>
+                {
+                    var categoryViewModel = new CategoryViewModel(category);
+                    RegisterCategoryEvent(categoryViewModel);
+
+                    return categoryViewModel;
+                }));
 
             CurrentCategory = CategoryViewModels.FirstOrDefault();
 
-            ShowNewCategoryCommand = new RelayCommand(ShowNewCategory);
+            ShowNewCategoryCommand = new RelayCommand(ShowNewCategory);            
         }
 
         /// <summary>
@@ -88,20 +86,9 @@ namespace GoogleTaskDesktop.ViewModel
         {
             IsCategoriesShown = false;
 
-            var popup = ServiceLocator.Current.GetInstance<PopupViewModel>();
+            var popup = ServiceLocator.Current.GetInstance<EditorDialogViewModel>();
             popup.Show("New Category", "Enter new category name");
             popup.Updated += CategoryUpdatedAsync;
-
-            //
-            //if (CategoryPopupViewModel != null)
-            //{
-            //    CategoryPopupViewModel.Updated -= CategoryPopupViewModel_CategoryUpdatedAsync;
-            //}
-            //
-            //CategoryPopupViewModel = new PopupViewModel();
-            //CategoryPopupViewModel.Updated += CategoryPopupViewModel_CategoryUpdatedAsync;
-            //
-            //CategoryPopupViewModel.Show("New Category", "Enter new category name");
         }
 
         private async Task CategoryUpdatedAsync(string titleToUpdated)
@@ -109,12 +96,61 @@ namespace GoogleTaskDesktop.ViewModel
             // 처음 생성하는 경우 ID를 부여안함.
             // ID는 서버에서 자동으로 부여함.(미리 부여하면 에러발생함.)
             await Categories.AddCategoryAsync(new Category(titleToUpdated));
+            
             CategoryViewModels.Add(new CategoryViewModel(Categories.GetCategories().Last()));
 
             CurrentCategory = CategoryViewModels.Last();
 
-            var popup = ServiceLocator.Current.GetInstance<PopupViewModel>();
+            RegisterCategoryEvent(CurrentCategory);
+
+            var popup = ServiceLocator.Current.GetInstance<EditorDialogViewModel>();
             popup.Updated -= CategoryUpdatedAsync;
+        }
+
+        private void RenameCategory()
+        {
+
+        }
+
+        private async void RemoveCategoryAsync(object sender, EventArgs e)
+        {
+
+            if (System.Windows.MessageBox.Show("Remove category?", "Remove category", System.Windows.MessageBoxButton.OKCancel) 
+                == System.Windows.MessageBoxResult.OK)
+            {
+                var categoryViewModel = sender as CategoryViewModel;
+
+                // remove event
+                await Categories.RemoveCategoryAsync(categoryViewModel.Category.Id);
+
+                CategoryViewModels.Remove(categoryViewModel);
+
+                // CurrentCategory가 지워진 경우
+                if(CurrentCategory == null)
+                {
+                    CurrentCategory = CategoryViewModels.FirstOrDefault();
+                }
+
+                UnRegisterCategoryEvent(categoryViewModel);
+            }
+
+        }
+
+        private void RenameCateogryAsync(object sender, EventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void RegisterCategoryEvent(CategoryViewModel categoryViewModel)
+        {
+            categoryViewModel.CategoryRenameRequested += RenameCateogryAsync;
+            categoryViewModel.CategoryRemoveRequested += RemoveCategoryAsync;
+        }
+
+        private void UnRegisterCategoryEvent(CategoryViewModel categoryViewModel)
+        {
+            categoryViewModel.CategoryRenameRequested -= RenameCateogryAsync;
+            categoryViewModel.CategoryRemoveRequested -= RemoveCategoryAsync;
         }
     }
 }

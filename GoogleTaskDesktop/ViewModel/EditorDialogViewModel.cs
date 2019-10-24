@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace GoogleTaskDesktop.ViewModel
 {
-    public class PopupViewModel : ViewModelBase
+    public class EditorDialogViewModel : ViewModelBase
     {
         private string _title;
         private string _name;
@@ -54,7 +54,7 @@ namespace GoogleTaskDesktop.ViewModel
         public delegate Task UpdatedHandler(string updatedName);
         public event UpdatedHandler Updated;
 
-        public PopupViewModel()
+        public EditorDialogViewModel()
         {
             Title = string.Empty;
             Description = string.Empty;
