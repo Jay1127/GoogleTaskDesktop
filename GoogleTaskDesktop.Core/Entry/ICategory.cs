@@ -6,7 +6,7 @@ namespace GoogleTaskDesktop.Core
     public interface ICategory
     {
         string Id { get; }
-        string Title { get; }
+        string Title { get; set; }
         bool CanDelete { get; }
 
         Task LoadAsync();

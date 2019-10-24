@@ -6,10 +6,10 @@ namespace GoogleTaskDesktop.Core
     public interface ICategoryList
     {
         Task LoadAsync();
-        Task AddCategoryAsync(Category category);
-        List<Category> GetCategories();
-        Category FindCategory(string categoryId);
+        Task AddCategoryAsync(ICategory category);
+        List<ICategory> GetCategories();
+        ICategory FindCategory(string categoryId);
         Task RemoveCategoryAsync(string categoryId);
-        Task UpdateCategoryAsync(Category category);
+        Task UpdateCategoryAsync(ICategory category);
     }
 }

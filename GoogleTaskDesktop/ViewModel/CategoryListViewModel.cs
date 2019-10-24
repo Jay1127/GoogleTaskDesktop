@@ -7,6 +7,7 @@ using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
+using static GoogleTaskDesktop.ViewModel.EditorDialogViewModel;
 
 namespace GoogleTaskDesktop.ViewModel
 {
@@ -14,6 +15,7 @@ namespace GoogleTaskDesktop.ViewModel
     {
         private bool _isCategoriesShown;
         private CategoryViewModel _currentCategory;
+        private CategoryViewModel _editedCategory;
 
         /// <summary>
         /// 카테고리 리스트
@@ -114,16 +116,15 @@ namespace GoogleTaskDesktop.ViewModel
 
         private async void RemoveCategoryAsync(object sender, EventArgs e)
         {
+            _editedCategory = sender as CategoryViewModel;
 
             if (System.Windows.MessageBox.Show("Remove category?", "Remove category", System.Windows.MessageBoxButton.OKCancel) 
                 == System.Windows.MessageBoxResult.OK)
             {
-                var categoryViewModel = sender as CategoryViewModel;
-
                 // remove event
-                await Categories.RemoveCategoryAsync(categoryViewModel.Category.Id);
+                await Categories.RemoveCategoryAsync(_editedCategory.Category.Id);
 
-                CategoryViewModels.Remove(categoryViewModel);
+                CategoryViewModels.Remove(_editedCategory);
 
                 // CurrentCategory가 지워진 경우
                 if(CurrentCategory == null)
@@ -131,14 +132,32 @@ namespace GoogleTaskDesktop.ViewModel
                     CurrentCategory = CategoryViewModels.FirstOrDefault();
                 }
 
-                UnRegisterCategoryEvent(categoryViewModel);
+                UnRegisterCategoryEvent(_editedCategory);
             }
 
+            _editedCategory = null;
         }
 
         private void RenameCateogryAsync(object sender, EventArgs e)
         {
-            throw new NotImplementedException();
+            _editedCategory = sender as CategoryViewModel;
+
+            var popup = ServiceLocator.Current.GetInstance<EditorDialogViewModel>();
+            popup.Show("Rename Category", "Enter new category name");
+
+            popup.Updated += UpdateCategory;
+        }
+
+        private async Task UpdateCategory(string updatedName)
+        {
+            _editedCategory.Category.Title = updatedName;
+            await Categories.UpdateCategoryAsync(_editedCategory.Category);
+
+            _editedCategory.RaisePropertyChanged(nameof(_editedCategory.Title));
+            _editedCategory = null;
+
+            var popup = ServiceLocator.Current.GetInstance<EditorDialogViewModel>();
+            popup.Updated -= UpdateCategory;
         }
 
         private void RegisterCategoryEvent(CategoryViewModel categoryViewModel)

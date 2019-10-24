@@ -246,7 +246,8 @@
 
         <!--#region Category or Task popup-->
         <local:ItemEditorDialog DataContext="{Binding Source={StaticResource Locator}, Path=Popup}"
-                               Grid.RowSpan="2"/>
+                                Grid.RowSpan="2"
+                                Panel.ZIndex="1"/>
         
         <!--<simpleChildWindow:ChildWindow Grid.RowSpan="2"
                                        Title="{Binding Title}"      

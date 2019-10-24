@@ -12,7 +12,7 @@ namespace GoogleTaskDesktop.Core
         /// <summary>
         /// 카테고리 리스트
         /// </summary>
-        private List<Category> _categories;
+        private List<ICategory> _categories;
 
         /// <summary>
         /// 할일 목록들
@@ -26,12 +26,12 @@ namespace GoogleTaskDesktop.Core
         public static Category Deleted { get; set; }
 
         public string Id => ALL_CATEGORY_ID;
-        public string Title => ALL_CATEGORY_TITLE;
+        public string Title { get; set; } = ALL_CATEGORY_TITLE;
         public bool CanDelete => false;
 
         public CategoryList()
         {
-            _categories = new List<Category>();
+            _categories = new List<ICategory>();
             _tasks = new List<TaskItem>();
             Deleted = new Category(DELETED_CATEGORY_ID, "DELETED");
         }
@@ -59,7 +59,7 @@ namespace GoogleTaskDesktop.Core
         /// </summary>
         /// <param name="title"></param>
         /// <returns></returns>
-        public async System.Threading.Tasks.Task<Category> WithTaskListItemAsync(string title)
+        public async System.Threading.Tasks.Task<ICategory> WithTaskListItemAsync(string title)
         {
             var service = new GoogleTaskService();
             var newTaskList = await service.InsertTaskListAsync(new TaskList() { Title = title });
@@ -74,7 +74,7 @@ namespace GoogleTaskDesktop.Core
         /// 카테고리 추가
         /// </summary>
         /// <param name="category"></param>
-        public async System.Threading.Tasks.Task AddCategoryAsync(Category category)
+        public async System.Threading.Tasks.Task AddCategoryAsync(ICategory category)
         {
             // 처음 생성하는 경우 ID를 부여안함.
             // ID는 서버에서 자동으로 부여함.(미리 부여하면 에러발생함.)
@@ -88,7 +88,7 @@ namespace GoogleTaskDesktop.Core
         /// 카테고리 리스트 반환
         /// </summary>
         /// <returns></returns>
-        public List<Category> GetCategories()
+        public List<ICategory> GetCategories()
         {
             return _categories.ToList();
         }
@@ -98,7 +98,7 @@ namespace GoogleTaskDesktop.Core
         /// </summary>
         /// <param name="categoryId"></param>
         /// <returns></returns>
-        public Category FindCategory(string categoryId)
+        public ICategory FindCategory(string categoryId)
         {
             return _categories.Find(t => t.Id == categoryId);
         }
@@ -123,19 +123,16 @@ namespace GoogleTaskDesktop.Core
         /// </summary>
         /// <param name="category"></param>
         /// <returns></returns>
-        public async System.Threading.Tasks.Task UpdateCategoryAsync(Category category)
+        public async System.Threading.Tasks.Task UpdateCategoryAsync(ICategory category)
         {
             var service = new GoogleTaskService();
 
-            var newTaskList = await service.UpdateTaskListAsync(category.ToTaskList());
-
-            var index = _categories.FindIndex(t => t.Id == category.Id);
-            _categories[index] = new Category(newTaskList.Id, newTaskList.Title);
+            var newTaskList = await service.UpdateTaskListAsync((category as Category).ToTaskList());
         }
 
         public async System.Threading.Tasks.Task AddTaskAsync(TaskItem taskItem)
         {
-            Category category = FindCategory(taskItem.CategoryId);
+            ICategory category = FindCategory(taskItem.CategoryId);
             await category.AddTaskAsync(taskItem);
 
             _tasks.Add(category.FindTask(taskItem.Id));
@@ -153,7 +150,7 @@ namespace GoogleTaskDesktop.Core
 
         public async System.Threading.Tasks.Task RemoveTaskAsync(string taskId)
         {
-            Category category = FindCategory(FindTask(taskId).CategoryId);
+            ICategory category = FindCategory(FindTask(taskId).CategoryId);
 
             await category.RemoveTaskAsync(taskId);
 
@@ -162,7 +159,7 @@ namespace GoogleTaskDesktop.Core
 
         public async System.Threading.Tasks.Task UpdateTaskAsync(TaskItem taskItem)
         {
-            Category category = FindCategory(taskItem.CategoryId);
+            ICategory category = FindCategory(taskItem.CategoryId);
 
             await category.UpdateTaskAsync(taskItem);
 
