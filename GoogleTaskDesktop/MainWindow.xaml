@@ -20,18 +20,40 @@
     <Controls:MetroWindow.Resources>
         <local:EnumToBooleanConverter x:Key="EnumToBooleanConverter"/>
     </Controls:MetroWindow.Resources>
+    <Controls:MetroWindow.Flyouts>
+        <Controls:FlyoutsControl>
+            <Controls:Flyout Width="390"
+                             Theme="Light"
+                             Position="Right"
+                             IsPinned="False"
+                             CloseButtonVisibility="Collapsed"
+                             TitleVisibility="Collapsed"
+                             IsOpen="{Binding IsOpen}"
+                             DataContext="{Binding TaskDetailFlyout, Source={StaticResource Locator}}">
+                <local:TaskDetailView Margin="10"
+                                      DataContext="{Binding Task}"/>
+            </Controls:Flyout>
+        </Controls:FlyoutsControl>
+    </Controls:MetroWindow.Flyouts>
+
+    <!--<Controls:MetroWindow.RightWindowCommands>
+        <Controls:WindowCommands>
+            <ToggleButton Content="Layers" 
+        IsChecked="{Binding ElementName=yourMahAppFlyout, Path=IsOpen}" Cursor="Hand"/>
+        </Controls:WindowCommands>
+    </Controls:MetroWindow.RightWindowCommands>-->
     <i:Interaction.Triggers>
         <i:EventTrigger EventName="Loaded">
             <i:InvokeCommandAction Command="{Binding LoadCommand}"/>
         </i:EventTrigger>
     </i:Interaction.Triggers>
-    
+
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="40"/>
             <RowDefinition/>
         </Grid.RowDefinitions>
-
+        
         <Grid Grid.Row="0">
             <Button Width="35"
                     Height="35"
@@ -57,7 +79,7 @@
                 <RowDefinition Height="35"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
-            
+
             <StackPanel Orientation="Horizontal" Margin="0,0,0,0">
                 <StackPanel.Resources>
                     <Style TargetType="{x:Type RadioButton}">
@@ -86,7 +108,7 @@
                                 <Setter Property="Opacity" Value="0.7"/>
                             </Trigger>
                         </Style.Triggers>
-                    </Style>                    
+                    </Style>
                 </StackPanel.Resources>
 
                 <RadioButton IsChecked="{Binding FilterMode, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter={x:Static vm:TaskFilterMode.All}}"
@@ -134,7 +156,8 @@
             </Border>
 
             <DataGrid ItemsSource="{Binding Tasks}"
-                      DataContext="{Binding CategoryListViewModel.CurrentCategory}"
+                      SelectedItem="{Binding CurrentTask}"
+                      DataContext="{Binding CategoryListViewModel.CurrentCategory}"                      
                       AutoGenerateColumns="False"
                       CanUserAddRows="False"
                       HeadersVisibility="None"
@@ -185,10 +208,12 @@
                     <DataGridTemplateColumn Width="40">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
-                                <iconPacks:PackIconFontAwesome Kind="EllipsisHSolid" 
+                                <Button Command="{Binding ShowTaskDetailCommand}">
+                                    <iconPacks:PackIconFontAwesome Kind="EllipsisHSolid" 
                                                                Foreground="{DynamicResource AccentColorBrush}"
                                                                HorizontalAlignment="Center"
                                                                VerticalAlignment="Center"/>
+                                </Button>
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
@@ -248,7 +273,7 @@
         <local:ItemEditorDialog DataContext="{Binding Source={StaticResource Locator}, Path=Popup}"
                                 Grid.RowSpan="2"
                                 Panel.ZIndex="1"/>
-        
+
         <!--<simpleChildWindow:ChildWindow Grid.RowSpan="2"
                                        Title="{Binding Title}"      
                                        IsModal="True"

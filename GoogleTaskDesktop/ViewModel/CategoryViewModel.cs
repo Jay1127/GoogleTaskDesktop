@@ -1,6 +1,7 @@
 ﻿using CommonServiceLocator;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
+using GalaSoft.MvvmLight.Ioc;
 using GoogleTaskDesktop.Core;
 using MahApps.Metro.Controls.Dialogs;
 using System;
@@ -22,13 +23,22 @@ namespace GoogleTaskDesktop.ViewModel
     public class CategoryViewModel : ViewModelBase
     {
         private TaskFilterMode _filterMode;
+        private TaskItemViewModel _currentTask;
 
         /// <summary>
         /// 바인딩된 카테고리
         /// </summary>
         public ICategory Category { get; }
 
-        public ObservableCollection<TaskItem> Tasks { get; }
+        //public ObservableCollection<TaskItem> Tasks { get; }
+
+        public ObservableCollection<TaskItemViewModel> Tasks { get; }
+
+        public TaskItemViewModel CurrentTask
+        {
+            get => _currentTask;
+            set => Set(ref _currentTask, value);
+        }
 
         /// <summary>
         /// 뷰에 표시할 제목
@@ -71,9 +81,12 @@ namespace GoogleTaskDesktop.ViewModel
         {
             Category = category;
 
-            Tasks = new ObservableCollection<TaskItem>(Category.GetTasks());
+            //Tasks = new ObservableCollection<TaskItem>(Category.GetTasks());
+            Tasks = new ObservableCollection<TaskItemViewModel>(
+                Category.GetTasks().Select(t => new TaskItemViewModel(t)));
+
             ShowNewTaskCommand = new RelayCommand(ShowNewTaskPopup);
-            RenameCategoryCommand = new RelayCommand(() => CategoryRenameRequested ?.Invoke(this, EventArgs.Empty));
+            RenameCategoryCommand = new RelayCommand(() => CategoryRenameRequested?.Invoke(this, EventArgs.Empty));
             RemoveCategoryCommand = new RelayCommand(() => CategoryRemoveRequested?.Invoke(this, EventArgs.Empty));
         }
 
@@ -87,7 +100,8 @@ namespace GoogleTaskDesktop.ViewModel
         private async System.Threading.Tasks.Task CategoryUpdatedAsync(string updatedName)
         {
             await Category.AddTaskAsync(new TaskItem(updatedName));
-            Tasks.Add(Category.GetTasks().Last());
+            //Tasks.Add(Category.GetTasks().Last());
+            Tasks.Add(new TaskItemViewModel(Category.GetTasks().Last()));
 
             var popup = ServiceLocator.Current.GetInstance<EditorDialogViewModel>();
             popup.Updated -= CategoryUpdatedAsync;

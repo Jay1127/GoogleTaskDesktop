@@ -1,6 +1,7 @@
 ﻿using CommonServiceLocator;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
+using GalaSoft.MvvmLight.Ioc;
 using GoogleTaskDesktop.Core;
 using MahApps.Metro.Controls.Dialogs;
 using System;
@@ -70,7 +71,7 @@ namespace GoogleTaskDesktop.ViewModel
 
             CurrentCategory = CategoryViewModels.FirstOrDefault();
 
-            ShowNewCategoryCommand = new RelayCommand(ShowNewCategory);            
+            ShowNewCategoryCommand = new RelayCommand(ShowNewCategory);
         }
 
         /// <summary>
