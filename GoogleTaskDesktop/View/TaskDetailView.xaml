@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:GoogleTaskDesktop"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="370" Background="White">
+             d:DesignHeight="450" d:DesignWidth="370">
     <StackPanel>
         <StackPanel.Resources>
             <Style TargetType="{x:Type TextBlock}" x:Key="HeaderStyle">
@@ -25,7 +25,9 @@
                      Width="330"/>
             <Button Content="x"
                     HorizontalAlignment="Right"
-                    VerticalAlignment="Center"/>
+                    VerticalAlignment="Top"
+                    BorderThickness="0"
+                    Background="Transparent"/>
         </Grid>
 
         <Border Height="1" 

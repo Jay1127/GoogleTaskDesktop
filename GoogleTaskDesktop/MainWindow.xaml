@@ -23,7 +23,8 @@
     <Controls:MetroWindow.Flyouts>
         <Controls:FlyoutsControl>
             <Controls:Flyout Width="390"
-                             Theme="Light"
+                             Margin="0,40,0,0"
+                             Theme="Dark"
                              Position="Right"
                              IsPinned="False"
                              CloseButtonVisibility="Collapsed"
