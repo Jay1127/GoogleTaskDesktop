@@ -29,5 +29,11 @@ namespace GoogleTaskDesktop.ViewModel
             IsOpen = true;
             Task = task;
         }
+
+        public void Close()
+        {
+            IsOpen = false;
+            Task = null;
+        }
     }
 }

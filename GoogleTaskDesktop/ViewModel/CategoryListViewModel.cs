@@ -163,14 +163,14 @@ namespace GoogleTaskDesktop.ViewModel
 
         private void RegisterCategoryEvent(CategoryViewModel categoryViewModel)
         {
-            categoryViewModel.CategoryRenameRequested += RenameCateogryAsync;
-            categoryViewModel.CategoryRemoveRequested += RemoveCategoryAsync;
+            categoryViewModel.UpdatedRequested += RenameCateogryAsync;
+            categoryViewModel.RemoveRequested += RemoveCategoryAsync;
         }
 
         private void UnRegisterCategoryEvent(CategoryViewModel categoryViewModel)
         {
-            categoryViewModel.CategoryRenameRequested -= RenameCateogryAsync;
-            categoryViewModel.CategoryRemoveRequested -= RemoveCategoryAsync;
+            categoryViewModel.UpdatedRequested -= RenameCateogryAsync;
+            categoryViewModel.RemoveRequested -= RemoveCategoryAsync;
         }
     }
 }

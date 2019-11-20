@@ -19,6 +19,11 @@ namespace GoogleTaskDesktop.Core
         public string Title { get; set; }
 
         /// <summary>
+        /// 노트
+        /// </summary>
+        public string Note { get; set; }
+
+        /// <summary>
         /// 완료여부
         /// </summary>
         public bool IsCompleted { get; set; }
@@ -41,7 +46,7 @@ namespace GoogleTaskDesktop.Core
         /// <summary>
         /// 하위 할일 리스트
         /// </summary>
-        public List<TaskItem> SubItems { get; set; } = null;
+        public List<TaskItem> SubItems { get; set; }
 
         /// <summary>
         /// 할일 생성
@@ -49,6 +54,7 @@ namespace GoogleTaskDesktop.Core
         public TaskItem(string title)
         {
             Title = title;
+            SubItems = new List<TaskItem>();
         }
 
         /// <summary>
@@ -57,12 +63,14 @@ namespace GoogleTaskDesktop.Core
         /// <param name="taskId"></param>
         /// <param name="title"></param>
         /// <param name="isCompleted"></param>
-        public TaskItem(string categoryId, string taskId, string title, bool isCompleted = false)
+        public TaskItem(string categoryId, string taskId, string title, bool isCompleted = false, string parentTask = null)
         {
             CategoryId = categoryId;
             Id = taskId;
             Title = title;
             IsCompleted = isCompleted;
+            ParentTask = parentTask;
+            SubItems = new List<TaskItem>();
         }
 
         /// <summary>
@@ -75,7 +83,8 @@ namespace GoogleTaskDesktop.Core
             {
                 Id = Id,
                 Title = Title,
-                Status = GoogleTaskStatus.GetTaskStatus(IsCompleted)
+                Status = GoogleTaskStatus.GetTaskStatus(IsCompleted),
+                Parent = ParentTask
             };
         }
     }

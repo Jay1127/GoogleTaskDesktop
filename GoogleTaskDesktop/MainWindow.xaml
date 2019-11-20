@@ -23,7 +23,7 @@
     <Controls:MetroWindow.Flyouts>
         <Controls:FlyoutsControl>
             <Controls:Flyout Width="390"
-                             Margin="0,40,0,0"
+                             Margin="0,30,0,0"
                              Theme="Dark"
                              Position="Right"
                              IsPinned="False"
@@ -93,7 +93,7 @@
                                     <Border HorizontalAlignment="Center"
                                             VerticalAlignment="Center"
                                             BorderThickness="0"
-                                            Background="White">
+                                            Background="Transparent">
                                         <ContentPresenter HorizontalAlignment="Center"
                                                           VerticalAlignment="Center"/>
                                     </Border>
@@ -253,7 +253,7 @@
                     VerticalAlignment="Bottom">
                 <Button.Style>
                     <Style TargetType="{x:Type ButtonBase}"
-                               BasedOn="{StaticResource MahApps.Metro.Styles.MetroCircleButtonStyle}">
+                           BasedOn="{StaticResource MahApps.Metro.Styles.MetroCircleButtonStyle}">
                         <Setter Property="Width" Value="40"/>
                         <Setter Property="Height" Value="40"/>
                         <Setter Property="BorderThickness" Value="0"/>

@@ -109,6 +109,20 @@ namespace GoogleTaskDesktop.Core
         }
 
         /// <summary>
+        /// 특정 task를 특정 위치로 이동
+        /// </summary>
+        /// <param name="task"></param>
+        /// <param name="taskListId"></param>
+        /// <returns></returns>
+        public async System.Threading.Tasks.Task<Task> MoveTaskAsync(Task task, string taskListId)
+        {
+            var moveRequest = _taskService.Tasks.Move(taskListId, task.Id);
+            moveRequest.Parent = task.Parent;
+
+            return await moveRequest.ExecuteAsync();
+        }
+
+        /// <summary>
         /// Task 삭제하기
         /// </summary>
         /// <param name="taskId">삭제할 Task의 아이디</param>

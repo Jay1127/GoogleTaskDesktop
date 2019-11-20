@@ -89,6 +89,7 @@
     <Compile Include="ViewModel\CategoryListViewModel.cs" />
     <Compile Include="ViewModel\CategoryPopupViewModel.cs" />
     <Compile Include="ViewModel\CategoryViewModel.cs" />
+    <Compile Include="ViewModel\IReqeustItemEditable.cs" />
     <Compile Include="ViewModel\MainViewModel.cs" />
     <Compile Include="ViewModel\EditorDialogViewModel.cs" />
     <Compile Include="ViewModel\TaskDetailFlyoutViewModel.cs" />

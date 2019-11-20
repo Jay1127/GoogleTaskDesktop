@@ -57,33 +57,29 @@ namespace GoogleTaskDesktop.Core
         public async System.Threading.Tasks.Task LoadAsync()
         {
             var service = new GoogleTaskService();
-            var tasks = (await service.GetTasksAsync(Id)).Items;
+            var gTasks = (await service.GetTasksAsync(Id)).Items;
 
-            if (tasks != null)
+            if (gTasks != null)
             {
-                _tasks.AddRange(
-                    tasks.Select(task =>
+                // all tasks
+                var mainTasks = gTasks.Select(t => new TaskItem(Id, t.Id, t.Title, GoogleTaskStatus.CheckIsCompleted(t.Status), t.Parent) { Note = t.Notes }).ToList();
+
+                // main tasks
+                _tasks.AddRange(mainTasks.Where(t => t.ParentTask == null));
+
+                // sub tasks
+                var taskDic = mainTasks.ToDictionary(t => t.Id);
+
+                foreach(var task in taskDic)
+                {
+                    var parentId = task.Value.ParentTask;
+
+                    if (parentId != null)
                     {
-                        return new TaskItem(Id, task.Id, task.Title, 
-                                            GoogleTaskStatus.CheckIsCompleted(task.Status));
-                    }));
+                        taskDic[parentId].SubItems.Add(task.Value);
+                    }
+                }
             }
-        }
-
-        /// <summary>
-        /// 해당 제목으로 할일 목록을 생성해서 추가함.
-        /// </summary>
-        /// <param name="title"></param>
-        /// <returns></returns>
-        public async System.Threading.Tasks.Task<TaskItem> WithTaskItemAsync(string title)
-        {
-            var service = new GoogleTaskService();
-            var newTask = await service.InsertTaskAsync(new Task() { Title = title }, Id);
-            var taskItem = new TaskItem(Id, newTask.Id, newTask.Title);
-
-            _tasks.Add(taskItem);
-
-            return taskItem;
         }
 
         /// <summary>
@@ -98,7 +94,13 @@ namespace GoogleTaskDesktop.Core
             var service = new GoogleTaskService();
             var newTask = await service.InsertTaskAsync(task, Id);
 
-            var newTaskItem = new TaskItem(Id, newTask.Id, newTask.Title);
+            if (!string.IsNullOrEmpty(taskItem.ParentTask))
+            {
+                newTask.Parent = taskItem.ParentTask;
+                newTask = await service.MoveTaskAsync(newTask, taskItem.CategoryId);
+            }
+
+            var newTaskItem = new TaskItem(Id, newTask.Id, newTask.Title, false, newTask.Parent);
 
             _tasks.Add(newTaskItem);
         }
@@ -129,8 +131,12 @@ namespace GoogleTaskDesktop.Core
         public async System.Threading.Tasks.Task RemoveTaskAsync(string taskId)
         {
             var service = new GoogleTaskService();
+
+            var items = (await service.GetTasksAsync(Id)).Items;
+
             await service.DeleteTaskAsync(taskId, Id);
 
+            items = (await service.GetTasksAsync(Id)).Items;
             _tasks.Remove(FindTask(taskId));
         }
 
@@ -144,9 +150,25 @@ namespace GoogleTaskDesktop.Core
             var service = new GoogleTaskService();
             var newTask = await service.UpdateTaskAsync(taskItem.ToTask(), Id);
 
-            var index = _tasks.FindIndex(t => t.Id == newTask.Id);
-            _tasks[index] = new TaskItem(Id, newTask.Id, newTask.Title, 
-                                         GoogleTaskStatus.CheckIsCompleted(newTask.Status));
+            if(_tasks == null)
+            {
+                var index = _tasks.FindIndex(t => t.Id == newTask.Id);
+                _tasks[index] = new TaskItem(Id, newTask.Id, newTask.Title,
+                                             GoogleTaskStatus.CheckIsCompleted(newTask.Status))
+                {
+                    Note = newTask.Notes
+                };
+            }
+            else
+            {
+                var parent = _tasks.Find(t => t.Id == newTask.Parent);
+                var index = parent.SubItems.FindIndex(t => t.Id == newTask.Id);
+                parent.SubItems[index] = new TaskItem(Id, newTask.Id, newTask.Title,
+                                         GoogleTaskStatus.CheckIsCompleted(newTask.Status))
+                {
+                    Note = newTask.Notes
+                };
+            }
         }
 
         /// <summary>

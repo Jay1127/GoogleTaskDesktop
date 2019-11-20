@@ -20,7 +20,7 @@ namespace GoogleTaskDesktop.ViewModel
         Completed
     }
 
-    public class CategoryViewModel : ViewModelBase
+    public class CategoryViewModel : ViewModelBase, IReqeustItemEditable
     {
         private TaskFilterMode _filterMode;
         private TaskItemViewModel _currentTask;
@@ -74,8 +74,8 @@ namespace GoogleTaskDesktop.ViewModel
         /// </summary>
         public RelayCommand RemoveCategoryCommand { get; }
 
-        public event EventHandler CategoryRenameRequested;
-        public event EventHandler CategoryRemoveRequested;
+        public event EventHandler UpdatedRequested;
+        public event EventHandler RemoveRequested;
 
         public CategoryViewModel(ICategory category)
         {
@@ -85,9 +85,15 @@ namespace GoogleTaskDesktop.ViewModel
             Tasks = new ObservableCollection<TaskItemViewModel>(
                 Category.GetTasks().Select(t => new TaskItemViewModel(t)));
 
+            foreach(var task in Tasks)
+            {
+                task.UpdatedRequested += OnTaskUpdatedReqeust;
+                task.RemoveRequested += OnTaskRemoveRequested;
+            }
+
             ShowNewTaskCommand = new RelayCommand(ShowNewTaskPopup);
-            RenameCategoryCommand = new RelayCommand(() => CategoryRenameRequested?.Invoke(this, EventArgs.Empty));
-            RemoveCategoryCommand = new RelayCommand(() => CategoryRemoveRequested?.Invoke(this, EventArgs.Empty));
+            RenameCategoryCommand = new RelayCommand(() => UpdatedRequested?.Invoke(this, EventArgs.Empty));
+            RemoveCategoryCommand = new RelayCommand(() => RemoveRequested?.Invoke(this, EventArgs.Empty));
         }
 
         private void ShowNewTaskPopup()
@@ -97,7 +103,7 @@ namespace GoogleTaskDesktop.ViewModel
             popup.Updated += CategoryUpdatedAsync; ;
         }
 
-        private async System.Threading.Tasks.Task CategoryUpdatedAsync(string updatedName)
+        private async Task CategoryUpdatedAsync(string updatedName)
         {
             await Category.AddTaskAsync(new TaskItem(updatedName));
             //Tasks.Add(Category.GetTasks().Last());
@@ -105,6 +111,58 @@ namespace GoogleTaskDesktop.ViewModel
 
             var popup = ServiceLocator.Current.GetInstance<EditorDialogViewModel>();
             popup.Updated -= CategoryUpdatedAsync;
+        }
+
+        private async void OnTaskRemoveRequested(object sender, EventArgs e)
+        {
+            var flyout = ServiceLocator.Current.GetInstance<TaskDetailFlyoutViewModel>();
+            flyout.Close();
+
+            var taskVM = (sender as TaskItemViewModel);
+            var task = taskVM.Task;
+
+            await Category.RemoveTaskAsync(task.Id);
+
+            Tasks.Remove(taskVM);
+            taskVM.SubTasks.Clear();
+            task.SubItems.Clear();
+        }
+
+        private async void OnTaskUpdatedReqeust(object sender, EventArgs e)
+        {
+            var taskVM = (sender as TaskItemViewModel);
+            var task = taskVM.Task;
+
+            // 새로 추가된 서브 아이템
+            var tasksToUdpate = taskVM.SubTasks
+                                        .Where(t => string.IsNullOrEmpty(t.Task.Id))
+                                        .Select(t => t.Task);
+
+            foreach(var item in tasksToUdpate)
+            {
+                await Category.AddTaskAsync(item);
+
+                task.SubItems.Add(Category.GetTasks().Last());
+            }
+
+            // Task 제목 수정
+            await UpdateTask(taskVM);
+
+            // SubTask 제목 수정
+            foreach(var item in taskVM.SubTasks)
+            {
+                await UpdateTask(item);
+            }
+        }
+
+        private async Task UpdateTask(TaskItemViewModel taskItemViewModel)
+        {
+            if (taskItemViewModel.NeedUpdate)
+            {
+                await Category.UpdateTaskAsync(taskItemViewModel.Task);
+
+                taskItemViewModel.NeedUpdate = false;
+            }
         }
 
         private void ChangeViewMode()
