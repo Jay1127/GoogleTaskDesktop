@@ -147,21 +147,23 @@ namespace GoogleTaskDesktop.Core
         /// <returns></returns>
         public async System.Threading.Tasks.Task UpdateTaskAsync(TaskItem taskItem)
         {
+            // 서버에 업데이트
             var service = new GoogleTaskService();
             var newTask = await service.UpdateTaskAsync(taskItem.ToTask(), Id);
 
-            if(_tasks == null)
+            // 서버에서 데이터 가져와서 갱신
+            var parent = _tasks.Find(t => t.Id == newTask.Parent);
+
+            if (parent == null)
             {
                 var index = _tasks.FindIndex(t => t.Id == newTask.Id);
-                _tasks[index] = new TaskItem(Id, newTask.Id, newTask.Title,
-                                             GoogleTaskStatus.CheckIsCompleted(newTask.Status))
+                _tasks[index] = new TaskItem(Id, newTask.Id, newTask.Title, GoogleTaskStatus.CheckIsCompleted(newTask.Status))
                 {
                     Note = newTask.Notes
                 };
             }
             else
             {
-                var parent = _tasks.Find(t => t.Id == newTask.Parent);
                 var index = parent.SubItems.FindIndex(t => t.Id == newTask.Id);
                 parent.SubItems[index] = new TaskItem(Id, newTask.Id, newTask.Title,
                                          GoogleTaskStatus.CheckIsCompleted(newTask.Status))
