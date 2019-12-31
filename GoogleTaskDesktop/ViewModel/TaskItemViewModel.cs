@@ -42,6 +42,12 @@ namespace GoogleTaskDesktop.ViewModel
             }
         }
 
+        public bool IsCompleted
+        {
+            get => Task.IsCompleted;
+            set => Task.IsCompleted = value;
+        }
+
         public TaskItem Task { get; }
 
         public ObservableCollection<TaskItemViewModel> SubTasks { get; private set; }

@@ -74,6 +74,8 @@ namespace GoogleTaskDesktop.ViewModel
         /// </summary>
         public RelayCommand RemoveCategoryCommand { get; }
 
+        public RelayCommand<object> ChangeStatusCommand { get; }
+
         public event EventHandler UpdatedRequested;
         public event EventHandler RemoveRequested;
 
@@ -94,6 +96,7 @@ namespace GoogleTaskDesktop.ViewModel
             ShowNewTaskCommand = new RelayCommand(ShowNewTaskPopup);
             RenameCategoryCommand = new RelayCommand(() => UpdatedRequested?.Invoke(this, EventArgs.Empty));
             RemoveCategoryCommand = new RelayCommand(() => RemoveRequested?.Invoke(this, EventArgs.Empty));
+            ChangeStatusCommand = new RelayCommand<object>((param) => ChangedTaskStatus(param));
         }
 
         private void ShowNewTaskPopup()
@@ -126,6 +129,17 @@ namespace GoogleTaskDesktop.ViewModel
             Tasks.Remove(taskVM);
             taskVM.SubTasks.Clear();
             task.SubItems.Clear();
+        }
+
+        private async void ChangedTaskStatus(object parameter)
+        {
+            var taskVM = parameter as TaskItemViewModel;
+
+            // 상태 변경
+            taskVM.IsCompleted = !taskVM.IsCompleted;
+
+            // 업데이트
+            await Category.UpdateTaskAsync(taskVM.Task);
         }
 
         private async void OnTaskUpdatedReqeust(object sender, EventArgs e)
@@ -171,11 +185,11 @@ namespace GoogleTaskDesktop.ViewModel
 
             if (_filterMode == TaskFilterMode.Completed)
             {
-                collectionView.Filter = (item) => (item as TaskItem).IsCompleted;
+                collectionView.Filter = (item) => (item as TaskItemViewModel).Task.IsCompleted;
             }
             else if (_filterMode == TaskFilterMode.InProccess)
             {
-                collectionView.Filter = (item) => !(item as TaskItem).IsCompleted;
+                collectionView.Filter = (item) => !(item as TaskItemViewModel).Task.IsCompleted;
             }
             else
             {
